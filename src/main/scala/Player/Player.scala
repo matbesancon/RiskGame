@@ -16,13 +16,10 @@ class Player(val name:String,val color: Colors.Value,val inGame:Boolean=true){
 }
 
 abstract class Troops(val number: Int, val player: Player){
-
 }
 
-class AttackTroops(number: Int, player: Player) extends Troops(number, player){
-
+class AttackTroops(number: Int,player: Player,val origin: Country) extends Troops(number, player){
 }
 
-class DefenseTroops(number: Int, player: Player, country: Country) extends Troops(number, player){
-
+class DefenseTroops(number: Int,player: Player,val country: Country) extends Troops(number, player){
 }

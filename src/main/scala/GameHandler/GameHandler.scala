@@ -2,8 +2,10 @@
   * Created by mbesancon on 08.05.16.
   */
 package GameHandling;
+import scala.language.postfixOps
+import util.Random.nextInt
 import WorldMap._
-import Player.{DefenseTroops, _}
+import Player.{AttackTroops, DefenseTroops, _}
 import Misc._;
 
 object GameHandler {
@@ -43,21 +45,51 @@ object GameHandler {
     }
   }
 
-  def fight(defenseTroops: DefenseTroops,attackTroops: AttackTroops,situation: Situation): Situation = {
+  def throwDice(defDice:List[Int],attDice:List[Int]): List[Int] = {
+    // returns losses of defense and of attack
+    (attDice,defDice) match {
+      case (Nil,_) => List(0,0)
+      case (_,Nil) => List(0,0)
+      case _ => {
+        if(attDice.sorted.head>defDice.sorted.head){
+          (List(0,1),throwDice(defDice.sorted.tail,attDice.sorted.tail)).zipped.map(_+_)
+        }else{
+          (List(1,0),throwDice(defDice.sorted.tail,attDice.sorted.tail)).zipped.map(_+_)
+        }
+      }
+    }
+  }
+
+  def fight(target: Country,attackTroops: AttackTroops,situation: Situation): Situation = {
     if(attackTroops.number<=0){
       println("Attacker "+ attackTroops.player.name+" defeated.")
       situation
-    }else if(defenseTroops.number<=0){
-      println("Defender "+ defenseTroops.player.name+" defeated.")
-      println("Country "+defenseTroops.country.name+" taken by "+attackTroops.player.name)
-      situation.updated(defenseTroops.country,new CountrySituation(
-        new DefenseTroops(attackTroops.number,attackTroops.player,defenseTroops.country),
+    }else if(situation.troopMap.apply(target).troops.number<=0){
+      println("Defender "+ situation.troopMap.apply(target).player.name+" defeated.")
+      println("Country "+target.name+" taken by "+attackTroops.player.name)
+      situation.updated(target,new CountrySituation(
+        new DefenseTroops(attackTroops.number,attackTroops.player,target),
         attackTroops.player))
     }else {
-//      println("Defender "+ defenseTroops.country+" defeated.")
-      situation
+      // throw dice to determine outcome
+      val outcome: List[Int] = throwDice(
+        (for(d<-1 to situation.troopMap.apply(target).troops.number) yield nextInt(6)+1).toList,
+        (for(d<-1 to attackTroops.number) yield nextInt(6)+1).toList
+      )
+      val newCountSit: Situation = situation.updated(target,
+        new CountrySituation(
+          new DefenseTroops(
+            situation.troopMap.apply(target).troops.number-outcome.tail.head,
+            situation.troopMap.apply(target).player, target
+          ),situation.troopMap.apply(target).player
+        )
+      )
+
+      fight(target, new AttackTroops(
+        attackTroops.number-outcome.head,attackTroops.player,attackTroops.origin),newCountSit)
     }
   }
+
 
   def attack(attacker:Player,defender:Player,origin:Country,target:Country,situation: Situation):Situation ={
     val nTroopsOrigin: Int = situation.troopMap.apply(origin).troops.number

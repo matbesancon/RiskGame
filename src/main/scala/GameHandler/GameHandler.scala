@@ -8,6 +8,7 @@ import WorldMap._
 import Player.{AttackTroops, DefenseTroops, _}
 import Misc._
 
+import util.Try
 import scala.annotation.tailrec;
 
 object GameHandler {
@@ -18,6 +19,57 @@ object GameHandler {
     if(countries.isEmpty) new Situation(troopMap.toMap)
     else init(players.tail:+players.head,countries.tail,troopMap:+(countries.head,
       new CountrySituation(new DefenseTroops(1,players.head,countries.head),players.head)))
+  }
+
+  // TODO: Add rules in separate file 
+  val placementMap: Map[Int,Int] = Map(
+    3->35,
+    4->30,
+    5->25,
+    6->20)
+
+  @tailrec def placeTroops(player: Player,situation: Situation,nTroops:Int): Situation ={
+    if(nTroops<=0)
+      return situation
+    else{
+      println("Still "+nTroops+" to place.")
+      println("Current map: ")
+      situation.troopMap foreach println
+      println("Enter a country name where you want to place troops.")
+      val inputCount: String = io.StdIn.readLine
+      if(!WorldMap.countries.map(_.name).contains(inputCount)){
+        println("Country not in the map! (Typo maybe?)")
+        placeTroops(player,situation,nTroops)
+      }else{
+        val country = WorldMap.countries.filter(_.name==inputCount).head
+        if(situation.troopMap.apply(country).player!=player){
+          println("The country belongs to "+situation.troopMap.apply(country).player.name +" and not to "+player.name)
+          println("Choose another one")
+          placeTroops(player,situation,nTroops)
+        }else{
+          println("How many troops on country "+country.name+"?")
+          val inpNum:Try[Int] = Try(io.StdIn.readInt)
+          if(inpNum.isFailure){
+            println("Incorrect input, integer expected")
+            placeTroops(player,situation,nTroops)
+          }else{
+            val newSit: Situation = new Situation(situation.troopMap.updated(country,new CountrySituation(
+              new DefenseTroops(situation.troopMap.apply(country).troops.number+inpNum.get,player,country),player)))
+            placeTroops(player,newSit,nTroops-inpNum.get)
+          }
+        }
+      }
+    }
+  }
+
+  // TODO: FINISH FUNCTION
+  def initPlace(situation: Situation,nPlayers: Int): Situation = {
+    // place additional troops at the beginning
+//    val nTroops = placementMap.get(nPlayers)
+//    nTroops match{
+//      case Some(x) => placeTroops()
+//    }
+    situation
   }
 
   def playTurn(player: Player, situation: Situation): Situation = {

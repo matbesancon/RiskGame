@@ -6,20 +6,26 @@ import scala.language.postfixOps
 import util.Random.nextInt
 import WorldMap._
 import Player.{AttackTroops, DefenseTroops, _}
-import Misc._;
+import Misc._
+
+import scala.annotation.tailrec;
 
 object GameHandler {
+
+  @tailrec def init(players: Vector[Player], countries:List[Country],
+                    troopMap:List[(Country,CountrySituation)] = Nil): Situation = {
+    // affecting countries to players by recursively building
+    if(countries.isEmpty) new Situation(troopMap.toMap)
+    else init(players.tail:+players.head,countries.tail,troopMap:+(countries.head,
+      new CountrySituation(new DefenseTroops(1,players.head,countries.head),players.head)))
+  }
 
   def playTurn(player: Player, situation: Situation): Situation = {
     println("Play turn for player " + player.name)
     return situation
   }
 
-  //  def initSituation(val players: List[Player]): Situation = {
-  //
-  //  }
-
-  def playAll(players: List[Player], situation: Situation): Situation = {
+  @tailrec def playAll(players: List[Player], situation: Situation): Situation = {
     if (players.isEmpty) situation
     else {
       playAll(players.tail, playTurn(players.head, situation))

@@ -25,6 +25,8 @@ object WorldMap {
   val ukraine = new Country("Ukraine",europe,6)
   val westEurope = new Country("Western Europe",europe,7)
 
+  val countries: List[Country] = List(greatBrit,iceland,northEurope,scandinavia,
+    southEurope,ukraine,westEurope)
   // africa
 //  val congo = new Country("Congo",africa,1)
 //  val eastAfrica = new Country("East Africa",africa,2)

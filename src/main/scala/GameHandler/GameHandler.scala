@@ -30,7 +30,7 @@ object GameHandler {
 
   @tailrec def placeTroops(player: Player,situation: Situation,nTroops:Int): Situation ={
     if(nTroops<=0)
-      return situation
+      situation
     else{
       println("Still "+nTroops+" to place.")
       println("Current map: ")
@@ -74,7 +74,7 @@ object GameHandler {
 
   def playTurn(player: Player, situation: Situation): Situation = {
     println("Play turn for player " + player.name)
-    return situation
+    situation
   }
 
   @tailrec def playAll(players: List[Player], situation: Situation): Situation = {
@@ -163,7 +163,8 @@ object GameHandler {
       val nMoved: Int = RobustReader.robustInt(nTroopsOrigin - 1)
       val restTroops: DefenseTroops = new DefenseTroops(nTroopsOrigin - nMoved, attacker, origin)
 
-      situation.updated(origin, new CountrySituation(restTroops, attacker))
+      fight(target,new AttackTroops(nMoved,attacker,origin),
+        situation.updated(origin, new CountrySituation(restTroops, attacker)))
     }
   }
 }

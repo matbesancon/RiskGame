@@ -16,6 +16,6 @@ class CountrySituation(val troops: DefenseTroops,val player: Player){
 class Situation(val troopMap: Map[Country,CountrySituation]){
   def updated(country: Country,countrySituation: CountrySituation): Situation = {
     val newTroop = troopMap.updated(country,countrySituation)
-    return new Situation(newTroop)
+    new Situation(newTroop)
   }
 }

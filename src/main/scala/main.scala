@@ -1,7 +1,7 @@
 import WorldMap.{Country, _}
 import Player.{DefenseTroops, _}
-import Misc._;
-import GameHandling._;
+import Misc._
+import GameHandling.{CountrySituation, _};
 
 object RiskGame {
   def main(args: Array[String]) {
@@ -16,7 +16,11 @@ object RiskGame {
 
     val iniSit: Situation = GameHandler.init(Vector(testplay,player2),WorldMap.countries)
     iniSit.troopMap foreach println
-//    println(troops.number)
+//    val sit2 = iniSit.updated(WorldMap.neighboorhood.head.head,new CountrySituation(new DefenseTroops(10,testplay,testc),testplay))
+//    GameHandler.attack(testplay,player2,WorldMap.neighboorhood.head.head,WorldMap.neighboorhood.head.last,
+//      situation: Situation):Situation ={
+
+      //    println(troops.number)
 //    println(troops.player)
 //    println(troops.country)
   }

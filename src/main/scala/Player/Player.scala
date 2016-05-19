@@ -7,6 +7,8 @@ import GameHandling._;
 // TODOdone: fix enumeration for colors
 // val color:Colors.Value
 
+// TODO: Delete circular dependencies player troops situation
+
 class Player(val name:String,val color: Colors.Value,val inGame:Boolean=true){
 
 //  def attack(country: Country,situation:Situation,troops:AttackTroops) = {

@@ -138,8 +138,8 @@ object GameHandler {
         new CountrySituation(
           new DefenseTroops(
             situation.troopMap.apply(target).troops.number-outcome.tail.head,
-            situation.troopMap.apply(target).player, target
-          ),situation.troopMap.apply(target).player
+            situation.troopMap.apply(target).player, target),
+          situation.troopMap.apply(target).player
         )
       )
 

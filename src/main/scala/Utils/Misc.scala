@@ -1,6 +1,7 @@
 package Misc
 
 import io.StdIn;
+import WorldMap._;
 
 object Colors extends Enumeration{
   type Colors = Value
@@ -36,6 +37,24 @@ object RobustReader{
       case _ => {
         sys.error("Error in string to int conversion")
         robustInt(max)
+      }
+    }
+  }
+
+  def robustCountry(allowedCountries: List[Country]): Country = {
+    println("Allowed countries are: ")
+    allowedCountries foreach println
+    println("Enter a country name")
+    val input: String = StdIn.readLine()
+    val selection = allowedCountries filter {_.name==input}
+    selection match {
+      case Nil => {
+        println("Country not found, the value "+input+" is incorrect.")
+        robustCountry(allowedCountries)
+      }
+      case list => {
+        if (list.length>1) sys.error("Several countries correspond to a name")
+        else list.head
       }
     }
   }

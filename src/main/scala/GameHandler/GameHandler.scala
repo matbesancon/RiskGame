@@ -4,7 +4,7 @@
 package GameHandling;
 import scala.language.postfixOps
 import util.Random.nextInt
-import WorldMap._
+import WorldMap.{Country, _}
 import Player.{AttackTroops, DefenseTroops, _}
 import Misc._
 
@@ -60,6 +60,28 @@ object GameHandler {
         }
       }
     }
+  }
+
+  def placeTroops(situation: Situation,player: Player,nTroops: Int): Situation = {
+    if(nTroops==0) situation
+    else if(nTroops>0){
+      val playerCountry: Map[Country,CountrySituation] = situation.troopMap.filter(
+        (pair:(Country,CountrySituation)) => pair._2.player==player
+      )
+      println("Player "+player.name + " still has "+nTroops+" to place.")
+      println("You can place troops on the following countries:")
+      playerCountry.foreach{pair=> println(pair._1.toString)}
+      val selectedCountry: Country = RobustReader.robustCountry(playerCountry.map(pair=>pair._1).toList)
+      println("How many troops do you wish to place on that country.")
+      val wishedTroops: Int = RobustReader.robustInt(nTroops)
+      val actualTroops = situation.troopMap.apply(selectedCountry).troops
+      situation.updated(
+        selectedCountry,new CountrySituation(
+          new DefenseTroops(actualTroops.number+wishedTroops,player,selectedCountry),player
+        )
+      )
+    }
+    else sys.error("Negative number of troops to place in placeTroops")
   }
 
   // TODO: FINISH FUNCTION

@@ -59,3 +59,13 @@ object RobustReader{
     }
   }
 }
+
+object rulesContainer{
+  val initialTroops: Map[Int,Int] = Map(3->35,4->30,5->25,6->20)
+  def computeInitialTroops(nPlayers: Int): Int = {
+    initialTroops.get(nPlayers) match {
+      case None => sys.error("Number of players not allowed (choose between 2 and 6)")
+      case Some(nTroops) => nTroops
+    }
+  }
+}

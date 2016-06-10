@@ -1,12 +1,30 @@
 package Misc
 
-import io.StdIn;
-import WorldMap._;
+import io.StdIn
+import WorldMap._
+
+import annotation.tailrec
+import scala.text.DocNest;
 
 object Colors extends Enumeration{
   type Colors = Value
   val Green,Red,Yellow,Blue,Purple,Orange = Value
 }
+
+object Actions extends Enumeration{
+  type Actions = Value
+  val Move,Attack,NoAction = Value
+}
+
+//abstract class Actions
+//case class Move extends Actions
+//case class Attack extends Actions
+//case class NoAction extends Actions
+
+//object Actions extends Enumeration{
+//  type Actions = Value
+//  val Move, Attack, Display = Value
+//}
 
 object RobustReader{
 
@@ -16,7 +34,7 @@ object RobustReader{
     }
   }
 
-  def robustInt(max:Int): Int = {
+  @tailrec def robustInt(max:Int): Int = {
     println("Enter a value between 1 and "+max.toString)
     val value: Option[Int] = testInt(StdIn.readLine())
     value match {
@@ -41,7 +59,7 @@ object RobustReader{
     }
   }
 
-  def robustCountry(allowedCountries: List[Country]): Country = {
+  @tailrec def robustCountry(allowedCountries: List[Country]): Country = {
     println("Allowed countries are: ")
     allowedCountries foreach println
     println("Enter a country name")
@@ -58,6 +76,32 @@ object RobustReader{
       }
     }
   }
+
+  @tailrec def robustAction(stringSit: String): Actions.Value = {
+    println("Select an action")
+    println("Move: m - attack: a - display current situation: s - do nothing: n")
+    val input: String = StdIn.readLine()
+    if(input.length==0){
+      println("No action entered")
+      robustAction(stringSit)
+    }else if (input.head=='s'){
+      println(stringSit)
+      robustAction(stringSit)
+    }else if (input.head=='m'){
+      println("Move troops")
+      Actions.Move
+    }else if (input.head=='a'){
+      println("Attack")
+      Actions.Attack
+    }else if (input.head=='n'){
+      println("Nothing done")
+      Actions.NoAction
+    }else{
+      println("Action entered not valid")
+      robustAction(stringSit)
+    }
+  }
+
 }
 
 object rulesContainer{

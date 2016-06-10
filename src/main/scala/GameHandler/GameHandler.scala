@@ -28,43 +28,45 @@ object GameHandler {
     5 -> 25,
     6 -> 20)
 
-  @tailrec def placeTroops(player: Player, situation: Situation, nTroops: Int): Situation = {
-    if (nTroops <= 0)
-      situation
-    else {
-      println("Still " + nTroops + " to place.")
-      println("Current map: ")
-      situation.troopMap foreach println
-      println("Enter a country name where you want to place troops.")
-      val inputCount: String = io.StdIn.readLine
-      if (!WorldMap.countries.map(_.name).contains(inputCount)) {
-        println("Country not in the map! (Typo maybe?)")
-        placeTroops(player, situation, nTroops)
-      } else {
-        val country = WorldMap.countries.filter(_.name == inputCount).head
-        if (situation.troopMap.apply(country).player != player) {
-          println("The country belongs to " + situation.troopMap.apply(country).player.name + " and not to " + player.name)
-          println("Choose another one")
-          placeTroops(player, situation, nTroops)
-        } else {
-          println("How many troops on country " + country.name + "?")
-          val inpNum: Try[Int] = Try(io.StdIn.readInt)
-          if (inpNum.isFailure) {
-            println("Incorrect input, integer expected")
-            placeTroops(player, situation, nTroops)
-          } else {
-            val newSit: Situation = new Situation(situation.troopMap.updated(country, new CountrySituation(
-              new DefenseTroops(situation.troopMap.apply(country).troops.number + inpNum.get, player, country), player)))
-            placeTroops(player, newSit, nTroops - inpNum.get)
-          }
-        }
-      }
-    }
-  }
+//  @tailrec def placeTroops(player: Player, situation: Situation, nTroops: Int): Situation = {
+//    if (nTroops <= 0)
+//      situation
+//    else {
+//      println("Still " + nTroops + " to place.")
+//      println("Current map: ")
+//      situation.troopMap foreach println
+//      println("Enter a country name where you want to place troops.")
+//      val inputCount: String = io.StdIn.readLine
+//      if (!WorldMap.countries.map(_.name).contains(inputCount)) {
+//        println("Country not in the map! (Typo maybe?)")
+//        placeTroops(player, situation, nTroops)
+//      } else {
+//        val country = WorldMap.countries.filter(_.name == inputCount).head
+//        if (situation.troopMap.apply(country).player != player) {
+//          println("The country belongs to " + situation.troopMap.apply(country).player.name + " and not to " + player.name)
+//          println("Choose another one")
+//          placeTroops(player, situation, nTroops)
+//        } else {
+//          println("How many troops on country " + country.name + "?")
+//          val inpNum: Try[Int] = Try(io.StdIn.readInt)
+//          if (inpNum.isFailure) {
+//            println("Incorrect input, integer expected")
+//            placeTroops(player, situation, nTroops)
+//          } else {
+//            val newSit: Situation = new Situation(situation.troopMap.updated(country, new CountrySituation(
+//              new DefenseTroops(situation.troopMap.apply(country).troops.number + inpNum.get, player, country), player)))
+//            placeTroops(player, newSit, nTroops - inpNum.get)
+//          }
+//        }
+//      }
+//    }
+//  }
 
   @tailrec def placeTroops(situation: Situation, player: Player, nTroops: Int): Situation = {
+    if (nTroops<0) sys.error("Negative number of troops to place in placeTroops")
     if (nTroops == 0) situation
-    else if (nTroops > 0) {
+    // if (nTroops > 0)
+    else {
       val playerCountry: Map[Country, CountrySituation] = situation.troopMap.filter(
         (pair: (Country, CountrySituation)) => pair._2.player == player
       )
@@ -82,7 +84,6 @@ object GameHandler {
       )
       placeTroops(newSit, player, nTroops - wishedTroops)
     }
-    else sys.error("Negative number of troops to place in placeTroops")
   }
 
   @tailrec def initPlace(situation: Situation, players: List[Player], nTroops: Option[Int] = None): Situation = {
@@ -103,6 +104,13 @@ object GameHandler {
   // TODO: Finish function playTurn
   def playTurn(player: Player, situation: Situation): Situation = {
     println("Play turn for player " + player.name)
+    println(situation.toString)
+    println("--------------")
+    // TODO: compute troops and place
+    val newTroops: Int = situation.troopsPlace(player)
+    val placedSit: Situation = placeTroops(situation,player,newTroops)
+    println("Select an action")
+    println("Move: enter m - attack: enter a")
     situation
   }
 

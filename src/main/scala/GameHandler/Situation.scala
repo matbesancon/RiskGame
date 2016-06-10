@@ -21,4 +21,18 @@ class Situation(val troopMap: Map[Country,CountrySituation]){
     (pair:(Country,CountrySituation))=> "\n Country "+pair._1.name + ", "+ pair._2.toString
   ).toString
 
+  def troopsPlace(player: Player): Int = {
+    val playerCountries = troopMap.filter(
+      (pair:(Country,CountrySituation))=>
+      pair._2.player==player)
+      .map(_._1).toList
+    val continentBonus: Int = WorldMap.countriesByContinent.filter(
+      (pair: (Continent,List[Country])) => pair._2.forall(
+        playerCountries.contains(_)
+      )
+    ).map(_._1.bonus).sum
+    println("Continent bonus: "+continentBonus)
+    val totBonus: Int = playerCountries.length/3 + continentBonus
+    Math.max(3,totBonus)
+  }
 }

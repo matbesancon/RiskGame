@@ -15,6 +15,11 @@ object WorldMap {
   val asia: Continent = new Continent("Asia",7)
   val oceania: Continent = new Continent("Oceania",2)
 
+  // continents List
+  val continents: List[Continent] = List(
+    northAmerica,europe,southAmerica,africa,asia,oceania
+  )
+
   // country definitions
   // europe
   val greatBrit = new Country("Great Britain",europe,1)
@@ -25,8 +30,13 @@ object WorldMap {
   val ukraine = new Country("Ukraine",europe,6)
   val westEurope = new Country("Western Europe",europe,7)
 
-  val countries: List[Country] = List(greatBrit,iceland,northEurope,scandinavia,
+  val countries: List[Country] = List(
+    greatBrit,iceland,northEurope,scandinavia,
     southEurope,ukraine,westEurope)
+
+  val countriesByContinent: List[(Continent,List[Country])] = continents map{
+    (cont: Continent) => (cont, countries filter {_.continent==cont})
+  }
   // africa
 //  val congo = new Country("Congo",africa,1)
 //  val eastAfrica = new Country("East Africa",africa,2)

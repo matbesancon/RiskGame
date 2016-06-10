@@ -9,5 +9,11 @@ Mutability is ugly, lambda is the new sexy.
 * SBT 0.13.7 (Scala build tool)
 
 ## Todo
-See //TODO comments
+  
+### Short term
+* See //TODO comments in src/main/scala
+* Simplify classes (Troops don't need to see their country)
 
+### Maybe later
+* Basic GUI
+* One-turn AI (taking a situation map as input and returning a decision)

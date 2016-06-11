@@ -60,4 +60,9 @@ object WorldMap {
     Set(southEurope,ukraine),
     Set(southEurope,westEurope)
   )
+
+  def findNeighbors(country: Country): List[Country] =
+    neighborhood.filter(edge => edge(country))
+      .map(edge => (edge--Set(country)).head)
+
 }

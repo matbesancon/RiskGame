@@ -68,7 +68,8 @@ object GameHandler {
   }
 
   // TODO: Finish function playTurn
-  def playTurn(player: Player, situation: Situation): Situation = {
+  @tailrec def playTurn(player: Player, situation: Situation): Situation = {
+    // if action, recurse, else finish turn
     println("Play turn for player " + player.name)
     println(situation.toString)
     println("--------------")
@@ -76,10 +77,10 @@ object GameHandler {
     val newTroops: Int = situation.troopsPlace(player)
     val placedSit: Situation = placeTroops(situation,player,newTroops)
     val action: Actions.Value = RobustReader.robustAction(placedSit.toString)
-    if(action==Actions.Move) move(player,)
-    // TODO: handle different action cases 
-    // TODO: not two actions for a troop 
-    situation
+    if(action==Actions.Move) playTurn(player,wrapperMove(player,placedSit))
+    else if(action==Actions.Attack) playTurn(player,wrapperAttack(player,placedSit))
+    else if(action==Actions.NoAction) placedSit
+    else sys.error("Error, unexpected action value")
   }
 
   @tailrec def playAll(players: List[Player], situation: Situation): Situation = {
@@ -92,7 +93,7 @@ object GameHandler {
   def wrapperMove(player: Player, situation: Situation): Situation = {
     println("Moving troops...")
     println("Select a country to move from.")
-    val playerCountries = filterPlayerCountries(player)
+    val playerCountries = situation.filterPlayerCountries(player)
     val origin = RobustReader.robustCountry(playerCountries)
     println("Select a country to move to.")
     val destination = RobustReader.robustCountry(
@@ -132,7 +133,7 @@ object GameHandler {
     }
   }
 
-  def fight(target: Country,attackTroops: AttackTroops,situation: Situation): Situation = {
+  @tailrec def fight(target: Country,attackTroops: AttackTroops,situation: Situation): Situation = {
     if(attackTroops.number<=0){
       println("Attacker "+ attackTroops.player.name+" defeated.")
       situation
@@ -156,14 +157,28 @@ object GameHandler {
           situation.troopMap.apply(target).player
         )
       )
-
       fight(target, new AttackTroops(
         attackTroops.number-outcome.head,attackTroops.player,attackTroops.origin),newCountSit)
     }
   }
 
+  def wrapperAttack(player: Player, situation: Situation): Situation = {
+    println("Attacking another country...")
+    println("Select a country to attack from.")
+    val playerCountries = situation.filterPlayerCountries(player)
+    val origin = RobustReader.robustCountry(playerCountries)
+    val targets: List[Country] = WorldMap.findNeighbors(origin).filter(!playerCountries.contains(_))
+    if (targets.isEmpty) {
+      println("No attackable country connected.")
+      situation
+    }else {
+      println("Select a country to attack.")
+      val target = RobustReader.robustCountry(targets)
+      attack(origin,target,situation,player)
+    }
+  }
 
-  def attack(attacker:Player,defender:Player,origin:Country,target:Country,situation: Situation):Situation ={
+  def attack(origin:Country,target:Country,situation: Situation,attacker: Player):Situation ={
     val nTroopsOrigin: Int = situation.troopMap.apply(origin).troops.number
     if (WorldMap.neighborhood.contains(Set(origin, target) == false)) {
       println("Origin and destination are not neighbors")
@@ -175,8 +190,10 @@ object GameHandler {
       println("With how many troops do you want to attack?")
       val nTroopsDef: Int = situation.troopMap.apply(target).troops.number
       val nMoved: Int = RobustReader.robustInt(nTroopsOrigin - 1)
-      val restTroops: DefenseTroops = new DefenseTroops(nTroopsOrigin - nMoved, attacker, origin)
-
+      val restTroops: DefenseTroops = new DefenseTroops(
+        nTroopsOrigin-nMoved,
+        attacker, origin
+      )
       fight(target,new AttackTroops(nMoved,attacker,origin),
         situation.updated(origin, new CountrySituation(restTroops, attacker)))
     }

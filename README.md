@@ -12,7 +12,7 @@ Mutability is ugly, lambda is the new sexy.
   
 ### Short term
 * See //TODO comments in src/main/scala
-* Simplify classes (Troops don't need to see their country)
+* Simplify classes (Circular dependencies: troops don't need to see their country)
 
 ### Maybe later
 * Basic GUI

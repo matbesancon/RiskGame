@@ -9,7 +9,7 @@ import WorldMap._;
 import Misc._;
 
 // situation: Country -> (troops present, authorized to move, player)
-class CountrySituation(val troops: DefenseTroops,val player: Player){
+class CountrySituation(val troops: DefenseTroops, val player: Player){
   override def toString = "player: " + player.name+ ", troops " + troops.number
 }
 

@@ -47,7 +47,6 @@ object WorldMap {
 
   val neighborhood: List[Set[Country]] = List(
     Set(greatBrit,iceland),
-    Set(greatBrit,iceland),
     Set(greatBrit,westEurope),
     Set(greatBrit,scandinavia),
     Set(greatBrit,northEurope),

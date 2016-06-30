@@ -73,7 +73,6 @@ object GameHandler {
     println("Play turn for player " + player.name)
     println(situation.toString)
     println("--------------")
-    // TODO: compute troops and place
     val newTroops: Int = situation.troopsPlace(player)
     val placedSit: Situation = placeTroops(situation,player,newTroops)
     val action: Actions.Value = RobustReader.robustAction(placedSit.toString)

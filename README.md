@@ -13,6 +13,8 @@ Mutability is ugly, lambda is the new sexy.
 ### Short term
 * See //TODO comments in src/main/scala
 * Simplify classes (Circular dependencies: troops don't need to see their country)
+* Clean main function to run the game
+* Move tests from main to test folder
 
 ### Maybe later
 * Basic GUI
